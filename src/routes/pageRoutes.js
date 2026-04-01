@@ -1,5 +1,6 @@
 import express from "express";
 import Page from "../models/Page.js";
+import protect from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
 // ------------------------------------------------
 const getAllPages = async (req, res) => {
     try {
-        const pages = await Page.find().select("-projectData").sort({ createdAt: -1 });
+        const pages = await Page.find({ user: req.user._id }).select("-projectData").sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
@@ -28,7 +29,7 @@ const getAllPages = async (req, res) => {
 // ------------------------------------------------
 const getPage = async (req, res) => {
     try {
-        const page = await Page.findById(req.params.id);
+        const page = await Page.findById({ _id: req.params.id, user: req.user._id });
 
         if (!page) {
             return res.status(404).json({
@@ -68,6 +69,7 @@ const createPage = async (req, res) => {
             name,
             projectData,
             slug,
+            user: req.user._id,
         });
 
         res.status(201).json({
@@ -92,7 +94,7 @@ const updatePage = async (req, res) => {
         const { name, projectData, published } = req.body;
 
         const page = await Page.findByIdAndUpdate(
-            req.params.id,
+            { _id: req.params.id, user: req.user._id },
             { name, projectData, published },
             // return updated document
             { new: true }
@@ -124,7 +126,7 @@ const updatePage = async (req, res) => {
 const deletePage = async (req, res) => {
     try {
 
-        const page = await Page.findByIdAndDelete(req.params.id);
+        const page = await Page.findByIdAndDelete({ _id: req.params.id, user: req.user._id });
 
         if (!page) {
             return res.status(404).json({
@@ -149,6 +151,8 @@ const deletePage = async (req, res) => {
 // ------------------------------------------------
 // Register routes
 // ------------------------------------------------
+router.use(protect);
+
 router.get("/", getAllPages);
 router.get("/:id", getPage);
 router.post("/", createPage);

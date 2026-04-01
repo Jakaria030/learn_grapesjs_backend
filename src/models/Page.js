@@ -2,6 +2,12 @@ import mongoose from "mongoose";
 
 const pageSchema = new mongoose.Schema(
     {
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        
         // page name — shown in dashboard
         name: {
             type: String,
