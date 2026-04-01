@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-// import pageRoutes from "./routes/pageRoutes.js";
+import pageRoutes from "./routes/pageRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 
 // Routes
-// app.use("/api/pages", pageRoutes);
+app.use("/api/pages", pageRoutes);
 
 // Health check route
 app.get("/", (req, res) => {
